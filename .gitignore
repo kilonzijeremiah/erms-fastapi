@@ -1,0 +1,19 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+
+# Backend
+backend/dev.db
+backend/prisma/migrations/
+backend/dist/
+
+# Frontend
+frontend/dist/
+frontend/.vite/
+frontend/node_modules/
+
+# Other
+*.sqlite
+*.db

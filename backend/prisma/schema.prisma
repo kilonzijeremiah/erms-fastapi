@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("admin")   // admin or teacher
+  createdAt DateTime @default(now())
+}
+
+model Teacher {
+  id          String           @id @default(cuid())
+  email       String           @unique
+  password    String
+  name        String
+  subjects    TeacherSubject[]
+  createdAt   DateTime         @default(now())
+}
+
+model ClassStream {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  level     String
+  capacity  Int       @default(40)
+  students  Student[]
+  subjects  StreamSubject[]
+  createdAt DateTime  @default(now())
+}
+
+model Student {
+  id            String   @id @default(cuid())
+  studentId     String   @unique
+  name          String
+  email         String?
+  gender        String?
+  dateOfBirth   DateTime?
+  classStreamId String
+  classStream   ClassStream @relation(fields: [classStreamId], references: [id])
+  scores        Score[]
+  createdAt     DateTime @default(now())
+}
+
+model Subject {
+  id              String           @id @default(cuid())
+  name            String
+  code            String           @unique
+  streamSubjects  StreamSubject[]
+  scores          Score[]
+  teachers        TeacherSubject[]
+}
+
+model StreamSubject {
+  id            String      @id @default(cuid())
+  classStreamId String
+  subjectId     String
+  classStream   ClassStream @relation(fields: [classStreamId], references: [id])
+  subject       Subject     @relation(fields: [subjectId], references: [id])
+
+  @@unique([classStreamId, subjectId])
+}
+
+model TeacherSubject {
+  id          String   @id @default(cuid())
+  teacherId   String
+  subjectId   String
+  teacher     Teacher  @relation(fields: [teacherId], references: [id])
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+
+  @@unique([teacherId, subjectId])
+}
+
+model Score {
+  id          String   @id @default(cuid())
+  studentId   String
+  subjectId   String
+  examType    String
+  marks       Float
+  student     Student  @relation(fields: [studentId], references: [id])
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([studentId, subjectId, examType])
+}
