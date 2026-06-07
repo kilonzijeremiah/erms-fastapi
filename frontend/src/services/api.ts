@@ -1,14 +1,19 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://your-backend-url.onrender.com",   // ← Change this later
-  // For now, you can leave it or use a temporary public test
-  headers: { "Content-Type": "application/json" },
+  // Change this to your actual backend URL after deploying backend
+  baseURL: "http://localhost:8000",   // For local testing
+  // baseURL: "https://your-actual-backend.onrender.com",  // For production
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
