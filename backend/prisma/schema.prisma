@@ -1,3 +1,12 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -7,7 +16,6 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relations
   teacher   Teacher?
 }
 
@@ -28,6 +36,54 @@ model SubjectTeacher {
   subject    Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 
   @@unique([teacherId, subjectId])
+}
+
+model ClassStream {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique  // e.g., "Form 1A"
+  students    Student[]
+  subjects    Subject[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Student {
+  id            Int      @id @default(autoincrement())
+  admissionNumber String @unique
+  name          String
+  classStreamId Int
+  classStream   ClassStream @relation(fields: [classStreamId], references: [id])
+  scores        Score[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Subject {
+  id          Int              @id @default(autoincrement())
+  name        String
+  classStreamId Int
+  classStream ClassStream      @relation(fields: [classStreamId], references: [id])
+  scores      Score[]
+  teachers    SubjectTeacher[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Score {
+  id          Int      @id @default(autoincrement())
+  studentId   Int
+  subjectId   Int
+  ca1         Float?
+  ca2         Float?
+  exam        Float?
+  total       Float?
+  grade       String?
+  student     Student  @relation(fields: [studentId], references: [id])
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([studentId, subjectId])
 }
 
 enum Role {
