@@ -1,18 +1,18 @@
-// backend/src/routes/student.routes.ts
+
 import { Router } from 'express';
 import { 
   createStudent, 
   getAllStudents, 
   getStudentById, 
   updateStudent, 
-  deleteStudent,
+  deleteStudent, 
   getStudentsByClassStream 
 } from '../controllers/student.controller';
 
 const router = Router();
 
-router.post('/', createStudent);
 router.get('/', getAllStudents);
+router.post('/', createStudent);
 router.get('/:id', getStudentById);
 router.put('/:id', updateStudent);
 router.delete('/:id', deleteStudent);
