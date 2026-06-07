@@ -1,18 +1,22 @@
-export const login = async (req: Request, res: Response) => {
+import { Request, Response } from 'express';
+import prisma from '../lib/prisma';
+import bcrypt from 'bcryptjs';
+import { generateToken } from '../utils/jwt';
+
+export const login = async (
+  req: Request,
+  res: Response
+): Promise<Response | void> => {
   try {
     const { email, password } = req.body;
-
-    console.log("Login attempt:", email);
 
     const user = await prisma.user.findUnique({
       where: { email }
     });
 
-    console.log("User found:", !!user);
-
     if (!user) {
       return res.status(401).json({
-        error: "User not found"
+        error: 'Invalid email or password'
       });
     }
 
@@ -21,29 +25,29 @@ export const login = async (req: Request, res: Response) => {
       user.password
     );
 
-    console.log("Password valid:", isPasswordValid);
-
     if (!isPasswordValid) {
       return res.status(401).json({
-        error: "Wrong password"
+        error: 'Invalid email or password'
       });
     }
 
     const token = generateToken(user);
 
-    res.json({
+    return res.json({
       token,
       user: {
         id: user.id,
         email: user.email,
+        name: user.name,
         role: user.role
       }
     });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      error: "Internal server error"
+
+    return res.status(500).json({
+      error: 'Internal server error'
     });
   }
 };
