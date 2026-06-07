@@ -1,7 +1,7 @@
-// backend/src/controllers/auth.controller.ts
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { generateToken } from '../utils/jwt';
+import bcrypt from 'bcryptjs';
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -11,7 +11,14 @@ export const login = async (req: Request, res: Response) => {
       where: { email }
     });
 
-    if (!user || user.password !== password) {
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // ✅ Compare hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
@@ -26,7 +33,6 @@ export const login = async (req: Request, res: Response) => {
       },
       token
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
