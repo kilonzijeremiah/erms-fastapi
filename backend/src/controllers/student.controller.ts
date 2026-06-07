@@ -41,6 +41,28 @@ export const getStudentById = async (req: Request, res: Response) => {
   res.json(student);
 };
 
+export const updateStudent = async (req: Request, res: Response) => {
+  try {
+    const student = await prisma.student.update({
+      where: { id: parseInt(req.params.id) },
+      data: req.body,
+      include: { classStream: true }
+    });
+    res.json(student);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message || "Failed to update student" });
+  }
+};
+
+export const deleteStudent = async (req: Request, res: Response) => {
+  try {
+    await prisma.student.delete({ where: { id: parseInt(req.params.id) } });
+    res.json({ message: "Student deleted successfully" });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message || "Failed to delete student" });
+  }
+};
+
 export const getStudentsByClassStream = async (req: Request, res: Response) => {
   try {
     const students = await prisma.student.findMany({
