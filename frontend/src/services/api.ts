@@ -1,12 +1,11 @@
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://erms-fastapi.vercel.app';
+
 const api = axios.create({
-  // Change this to your actual backend URL after deploying backend
-  baseURL: "http://localhost:8000",   // For local testing
-  // baseURL: "https://your-actual-backend.onrender.com",  // For production
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: API_BASE_URL,
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
 });
 
 api.interceptors.request.use((config) => {
