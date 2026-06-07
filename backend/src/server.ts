@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
   res.json({ message: "Ikonex Academy API is running" });
 });
 
-// Temporary Admin Creator
+// ==================== TEMPORARY ADMIN CREATOR ====================
 app.get('/create-admin', async (req, res) => {
   try {
     const { PrismaClient } = await import('@prisma/client');
@@ -56,7 +56,7 @@ app.get('/create-admin', async (req, res) => {
 
     res.json({ 
       success: true, 
-      message: '✅ Default admin created!', 
+      message: 'Default admin created successfully!', 
       email: admin.email,
       password: 'admin123'
     });
@@ -65,6 +65,7 @@ app.get('/create-admin', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// =================================================================
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
