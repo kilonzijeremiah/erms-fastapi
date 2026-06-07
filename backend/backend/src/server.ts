@@ -5,12 +5,11 @@ import studentRoutes from './routes/student.routes';
 import classStreamRoutes from './routes/classStream.routes';
 import subjectRoutes from './routes/subject.routes';
 import scoreRoutes from './routes/score.routes';
-import teacherRoutes from './routes/teacher.routes';   // ← Teacher route
+import teacherRoutes from './routes/teacher.routes';
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// CORS
 app.use(cors({
   origin: [
     'https://ikonex-frontend-ecru.vercel.app',
@@ -30,13 +29,13 @@ app.use('/students', studentRoutes);
 app.use('/class-streams', classStreamRoutes);
 app.use('/subjects', subjectRoutes);
 app.use('/scores', scoreRoutes);
-app.use('/teachers', teacherRoutes);   // ← Teacher route
+app.use('/teachers', teacherRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.json({ message: "Ikonex Academy Student Management System API is running" });
 });
 
-// ==================== TEMPORARY ADMIN RESET (Remove later) ====================
+// ==================== TEMPORARY ADMIN RESET ====================
 app.get('/create-admin', async (req: Request, res: Response) => {
   try {
     const { PrismaClient } = await import('@prisma/client');
@@ -70,7 +69,7 @@ app.get('/create-admin', async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 });
-// =================================================================
+// ============================================================
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
