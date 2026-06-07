@@ -1,12 +1,12 @@
-// ==================== IMPROVED ADMIN CREATOR ====================
+// ==================== ADMIN CREATOR (New Credentials) ====================
 app.get('/create-admin', async (req, res) => {
   try {
     const { PrismaClient } = await import('@prisma/client');
     const bcrypt = await import('bcryptjs');
     const prisma = new PrismaClient();
 
-    const email = req.query.email as string || 'admin@ikonex.com';
-    const plainPassword = 'admin123';
+    const email = 'admin@ikonex.academy';
+    const plainPassword = 'password123';
 
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
@@ -23,7 +23,7 @@ app.get('/create-admin', async (req, res) => {
 
     res.json({ 
       success: true, 
-      message: 'Admin ready!', 
+      message: 'Default admin created with new credentials!', 
       email: admin.email,
       password: plainPassword
     });
@@ -32,4 +32,4 @@ app.get('/create-admin', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-// ===============================================================
+// =================================================================
