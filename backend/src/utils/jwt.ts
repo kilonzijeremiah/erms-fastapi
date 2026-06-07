@@ -1,11 +1,15 @@
-import jwt from "jsonwebtoken";
-
-const SECRET = "erms_secret_key";
+import jwt from 'jsonwebtoken';
 
 export const generateToken = (user: any) => {
-  return jwt.sign(user, SECRET, { expiresIn: "1d" });
-};
-
-export const verifyToken = (token: string) => {
-  return jwt.verify(token, SECRET);
+  return jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role
+    },
+    process.env.JWT_SECRET || 'secret',
+    {
+      expiresIn: '7d'
+    }
+  );
 };
