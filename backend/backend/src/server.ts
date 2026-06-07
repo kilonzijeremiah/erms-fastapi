@@ -1,4 +1,4 @@
-// ==================== TEMPORARY ADMIN RESET ROUTE ====================
+// TEMPORARY: Reset Admin Password
 app.get('/create-admin', async (req: Request, res: Response) => {
   try {
     const { PrismaClient } = await import('@prisma/client');
@@ -10,7 +10,7 @@ app.get('/create-admin', async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-    const admin = await prisma.user.upsert({
+    await prisma.user.upsert({
       where: { email },
       update: { password: hashedPassword },
       create: {
@@ -21,15 +21,8 @@ app.get('/create-admin', async (req: Request, res: Response) => {
       },
     });
 
-    res.json({ 
-      success: true, 
-      message: '✅ Admin password reset successfully!', 
-      email: admin.email,
-      password: plainPassword 
-    });
+    res.json({ success: true, message: 'Admin password reset!', email, password: plainPassword });
   } catch (error: any) {
-    console.error(error);
     res.status(500).json({ error: error.message });
   }
 });
-// =================================================================
