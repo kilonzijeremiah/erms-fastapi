@@ -1,5 +1,41 @@
-// ==================== ADMIN CREATOR (New Credentials) ====================
-app.get('/create-admin', async (req, res) => {
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import authRoutes from './routes/auth.routes';
+import studentRoutes from './routes/student.routes';
+import classStreamRoutes from './routes/classStream.routes';
+import subjectRoutes from './routes/subject.routes';
+import scoreRoutes from './routes/score.routes';
+
+const app = express();
+const PORT = process.env.PORT || 8000;
+
+// CORS Configuration
+app.use(cors({
+  origin: [
+    'https://ikonex-frontend-ecru.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost:8000'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+app.use(express.json());
+
+app.use('/auth', authRoutes);
+app.use('/students', studentRoutes);
+app.use('/class-streams', classStreamRoutes);
+app.use('/subjects', subjectRoutes);
+app.use('/scores', scoreRoutes);
+
+app.get('/', (req: Request, res: Response) => {
+  res.json({ message: "Ikonex Academy API is running" });
+});
+
+// ==================== DEFAULT ADMIN CREATOR ====================
+app.get('/create-admin', async (req: Request, res: Response) => {
   try {
     const { PrismaClient } = await import('@prisma/client');
     const bcrypt = await import('bcryptjs');
@@ -23,7 +59,7 @@ app.get('/create-admin', async (req, res) => {
 
     res.json({ 
       success: true, 
-      message: 'Default admin created with new credentials!', 
+      message: 'Default admin created successfully!', 
       email: admin.email,
       password: plainPassword
     });
@@ -32,4 +68,8 @@ app.get('/create-admin', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-// =================================================================
+// ============================================================
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
