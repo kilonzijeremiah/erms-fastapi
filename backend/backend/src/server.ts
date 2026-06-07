@@ -1,4 +1,4 @@
-// TEMPORARY ADMIN ROUTE - Remove after first successful login
+// ==================== TEMPORARY ADMIN RESET ROUTE ====================
 app.get('/create-admin', async (req: Request, res: Response) => {
   try {
     const { PrismaClient } = await import('@prisma/client');
@@ -23,7 +23,7 @@ app.get('/create-admin', async (req: Request, res: Response) => {
 
     res.json({ 
       success: true, 
-      message: 'Admin password reset successfully!', 
+      message: '✅ Admin password reset successfully!', 
       email: admin.email,
       password: plainPassword 
     });
@@ -32,3 +32,4 @@ app.get('/create-admin', async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 });
+// =================================================================
