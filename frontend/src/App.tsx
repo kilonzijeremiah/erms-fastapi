@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';  // Create this file next if it does not exist
+import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Students from './pages/Students';
 
@@ -11,7 +11,6 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="students" element={<Students />} />
-          {/* Add other routes later */}
         </Route>
       </Routes>
     </Router>
