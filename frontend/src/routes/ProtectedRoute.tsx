@@ -6,18 +6,12 @@ interface Props {
   children: ReactNode;
 }
 
-const ProtectedRoute = ({ children }: Props) => {
-  const auth = useAuth();
-
-  if (!auth) {
-    return <Navigate to="/" replace />;
-  }
-
-  const { user, loading } = auth;
+export default function ProtectedRoute({ children }: Props) {
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center h-screen">
         Loading...
       </div>
     );
@@ -28,6 +22,4 @@ const ProtectedRoute = ({ children }: Props) => {
   }
 
   return <>{children}</>;
-};
-
-export default ProtectedRoute;
+}
