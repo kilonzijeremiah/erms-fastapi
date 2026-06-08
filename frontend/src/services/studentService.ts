@@ -1,24 +1,38 @@
 import api from "./api";
 
+export interface Student {
+  id?: number;
+  name: string;
+  admissionNumber: string;
+  classStreamId: number;
+  gender?: string;
+  age?: number;
+}
+
 const studentService = {
-  getAllStudents: async () => {
-    const response = await api.get("/students");
-    return response.data;
+  getAll: async () => {
+    const res = await api.get("/students");
+    return res.data;
   },
 
-  createStudent: async (data: any) => {
-    const response = await api.post("/students", data);
-    return response.data;
+  getOne: async (id: number) => {
+    const res = await api.get(`/students/${id}`);
+    return res.data;
   },
 
-  updateStudent: async (id: string, data: any) => {
-    const response = await api.put(`/students/${id}`, data);
-    return response.data;
+  create: async (data: Student) => {
+    const res = await api.post("/students", data);
+    return res.data;
   },
 
-  deleteStudent: async (id: string) => {
-    const response = await api.delete(`/students/${id}`);
-    return response.data;
+  update: async (id: number, data: Student) => {
+    const res = await api.put(`/students/${id}`, data);
+    return res.data;
+  },
+
+  remove: async (id: number) => {
+    const res = await api.delete(`/students/${id}`);
+    return res.data;
   }
 };
 
