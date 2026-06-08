@@ -1,12 +1,7 @@
-import React from 'react';
-
-const Students = () => {
+export default function Students() {
   return (
-    <div>
-      <h1 className="text-3xl font-semibold text-gray-900">Students</h1>
-      <p className="mt-4 text-gray-600">Students management page</p>
+    <div style={{ padding: 20 }}>
+      <h1>Students Works</h1>
     </div>
   );
-};
-
-export default Students;
+}
