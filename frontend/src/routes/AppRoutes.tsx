@@ -5,97 +5,35 @@ import Students from "../pages/Students";
 import ClassStreams from "../pages/ClassStreams";
 import Subjects from "../pages/Subjects";
 import Scores from "../pages/Scores";
-import Results from "../pages/Results";
 import Reports from "../pages/Reports";
+import StudentDetails from "../pages/StudentDetails";
+
 import ProtectedRoute from "./ProtectedRoute";
 import MainLayout from "../layout/MainLayout";
 
-const AppRoutes = () => {
+export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
 
-      {/* Protected Routes */}
       <Route
-        path="/dashboard"
+        path="/"
         element={
           <ProtectedRoute>
-            <MainLayout>
-              <Dashboard />
-            </MainLayout>
+            <MainLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="students" element={<Students />} />
+        <Route path="students/:id" element={<StudentDetails />} />
+        <Route path="class-streams" element={<ClassStreams />} />
+        <Route path="subjects" element={<Subjects />} />
+        <Route path="scores" element={<Scores />} />
+        <Route path="reports" element={<Reports />} />
+      </Route>
 
-      <Route
-        path="/students"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Students />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/class-streams"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <ClassStreams />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/subjects"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Subjects />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/scores"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Scores />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/results"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Results />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/reports"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Reports />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
-};
-
-export default AppRoutes;
+}
