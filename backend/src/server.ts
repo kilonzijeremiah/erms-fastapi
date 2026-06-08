@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 const app = express();
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production-2026';
 
 // Middleware
 app.use(cors({
@@ -18,7 +18,7 @@ app.use(express.json());
 
 // Health check
 app.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Ikonex API is running' });
+  res.json({ status: 'ok', message: 'Ikonex Backend is running' });
 });
 
 // ==================== AUTH LOGIN ====================
