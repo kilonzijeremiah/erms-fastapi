@@ -1,61 +1,55 @@
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
 import bcrypt
-import jwt
-from datetime import datetime, timedelta
 from prisma import Prisma
+from datetime import datetime
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-class LoginRequest(BaseModel):
+class RegisterRequest(BaseModel):
     email: str
     password: str
+    name: str
+    role: str = "TEACHER"   # Default to TEACHER, ADMIN can be created manually
 
-@router.post("/login")
-async def login(data: LoginRequest):
+@router.post("/register")
+async def register(data: RegisterRequest):
     prisma = Prisma()
     await prisma.connect()
 
     try:
-        user = await prisma.user.find_unique(
+        # Check if user already exists
+        existing_user = await prisma.user.find_unique(
             where={"email": data.email}
         )
 
-        if not user:
+        if existing_user:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User with this email already exists"
             )
 
-        # Verify password
-        if not bcrypt.checkpw(data.password.encode('utf-8'), user.password.encode('utf-8')):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials"
-            )
+        # Hash password
+        hashed_password = bcrypt.hashpw(data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-        # Create JWT token
-        JWT_SECRET = "your-super-secret-jwt-key-change-in-production-2026"
-        
-        access_token = jwt.encode(
-            {
-                "user_id": user.id,
-                "email": user.email,
-                "role": user.role,
-                "exp": datetime.utcnow() + timedelta(hours=24)
-            },
-            JWT_SECRET,
-            algorithm="HS256"
+        # Create new user
+        new_user = await prisma.user.create(
+            data={
+                "email": data.email,
+                "password": hashed_password,
+                "name": data.name,
+                "role": data.role.upper()
+            }
         )
 
         return {
-            "access_token": access_token,
-            "token_type": "bearer",
+            "success": True,
+            "message": "User registered successfully",
             "user": {
-                "id": user.id,
-                "email": user.email,
-                "name": user.name or "Admin User",
-                "role": user.role
+                "id": new_user.id,
+                "email": new_user.email,
+                "name": new_user.name,
+                "role": new_user.role
             }
         }
 
