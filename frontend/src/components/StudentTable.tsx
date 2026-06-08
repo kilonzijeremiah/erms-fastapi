@@ -2,10 +2,12 @@ import studentService, { Student } from "../services/studentService";
 
 export default function StudentTable({
   students,
-  onRefresh
+  onRefresh,
+  onEdit
 }: {
   students: Student[];
   onRefresh: () => void;
+  onEdit: (student: Student) => void;
 }) {
   const handleDelete = async (id?: number) => {
     if (!id) return;
@@ -20,7 +22,7 @@ export default function StudentTable({
           <th className="p-2">Name</th>
           <th>Admission No</th>
           <th>Class</th>
-          <th>Action</th>
+          <th>Actions</th>
         </tr>
       </thead>
 
@@ -30,7 +32,15 @@ export default function StudentTable({
             <td className="p-2">{s.name}</td>
             <td>{s.admissionNumber}</td>
             <td>{s.classStreamId}</td>
-            <td>
+
+            <td className="space-x-2">
+              <button
+                onClick={() => onEdit(s)}
+                className="bg-blue-500 text-white px-2 py-1"
+              >
+                Edit
+              </button>
+
               <button
                 onClick={() => handleDelete(s.id)}
                 className="bg-red-500 text-white px-2 py-1"
