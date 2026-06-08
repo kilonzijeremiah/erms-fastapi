@@ -1,16 +1,9 @@
-from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel
-import bcrypt
-from prisma import Prisma
-from datetime import datetime
-
-router = APIRouter(prefix="/auth", tags=["auth"])
-
+# ==================== USER REGISTRATION ====================
 class RegisterRequest(BaseModel):
     email: str
     password: str
     name: str
-    role: str = "TEACHER"   # Default to TEACHER, ADMIN can be created manually
+    role: str = "TEACHER"
 
 @router.post("/register")
 async def register(data: RegisterRequest):
@@ -19,20 +12,22 @@ async def register(data: RegisterRequest):
 
     try:
         # Check if user already exists
-        existing_user = await prisma.user.find_unique(
+        existing = await prisma.user.find_unique(
             where={"email": data.email}
         )
 
-        if existing_user:
+        if existing:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User with this email already exists"
             )
 
         # Hash password
-        hashed_password = bcrypt.hashpw(data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        hashed_password = bcrypt.hashpw(
+            data.password.encode('utf-8'), 
+            bcrypt.gensalt()
+        ).decode('utf-8')
 
-        # Create new user
         new_user = await prisma.user.create(
             data={
                 "email": data.email,
