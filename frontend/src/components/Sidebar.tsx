@@ -1,29 +1,7 @@
-import React from "react";
-import { Link, Outlet } from "react-router-dom";
-
-const Sidebar = () => {
+export default function Sidebar() {
   return (
-    <div style={{ display: "flex" }}>
-      <aside style={{ width: "250px", padding: "1rem" }}>
-        <h2>Student Management</h2>
-
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Dashboard</Link>
-            </li>
-            <li>
-              <Link to="/students">Students</Link>
-            </li>
-          </ul>
-        </nav>
-      </aside>
-
-      <main style={{ flex: 1, padding: "1rem" }}>
-        <Outlet />
-      </main>
+    <div style={{ padding: 20 }}>
+      <h1>Sidebar Works</h1>
     </div>
   );
-};
-
-export default Sidebar;
+}
