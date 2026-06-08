@@ -1,108 +1,56 @@
+// Add these imports at the top
 import express, { Request, Response } from 'express';
-import cors from 'cors';
-
-import authRoutes from './routes/auth.routes';
-import studentRoutes from './routes/student.routes';
-import classStreamRoutes from './routes/classStream.routes';
-import subjectRoutes from './routes/subject.routes';
-import scoreRoutes from './routes/score.routes';
-import teacherRoutes from './routes/teacher.routes';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const prisma = new PrismaClient();
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'; // Set this in Render env vars
 
-app.use(cors({
-  origin: [
-    'https://ikonex-frontend-ecru.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:3000'
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// ... existing code ...
 
-app.use(express.json());
-
-app.use('/auth', authRoutes);
-app.use('/students', studentRoutes);
-app.use('/class-streams', classStreamRoutes);
-app.use('/subjects', subjectRoutes);
-app.use('/scores', scoreRoutes);
-app.use('/teachers', teacherRoutes);
-
-/* HEALTH CHECK */
-app.get('/', (req: Request, res: Response) => {
-  res.json({ message: "Ikonex API is running" });
-});
-
-/* CREATE ADMIN (FIXED) */
-app.get('/create-admin', async (req: Request, res: Response) => {
+// ADD THIS LOGIN ROUTE
+app.post('/auth/login', async (req: Request, res: Response) => {
   try {
-    const { PrismaClient } = await import('@prisma/client');
-    const bcrypt = await import('bcryptjs');
+    const { email, password } = req.body;
 
-    const prisma = new PrismaClient();
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
 
-    const hashedPassword = await bcrypt.hash('admin123', 10);
-
-    const user = await prisma.user.upsert({
-      where: {
-        email: 'admin@ikonex.com'
-      },
-      update: {
-        password: hashedPassword
-      },
-      create: {
-        email: 'admin@ikonex.com',
-        password: hashedPassword,
-        name: 'Admin User',
-        role: 'ADMIN'
-      }
+    const user = await prisma.user.findUnique({
+      where: { email }
     });
 
-    return res.json({
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
       success: true,
       user: {
         id: user.id,
         email: user.email,
+        name: user.name,
         role: user.role
-      }
+      },
+      token
     });
 
   } catch (error: any) {
     console.error(error);
-    return res.status(500).json({
-      error: error.message
-    });
+    res.status(500).json({ error: "Internal server error" });
   }
-});
-
-/* DEBUG USERS */
-app.get('/debug-users', async (req: Request, res: Response) => {
-  try {
-    const { PrismaClient } = await import('@prisma/client');
-
-    const prisma = new PrismaClient();
-
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true
-      }
-    });
-
-    return res.json(users);
-
-  } catch (error: any) {
-    return res.status(500).json({
-      error: error.message
-    });
-  }
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
 });
