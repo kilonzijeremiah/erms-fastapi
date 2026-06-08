@@ -1,15 +1,17 @@
 import api from "./api";
 
-const scoreService = {
-  getAllScores: async () => {
-    const response = await api.get("/scores");
-    return response.data;
-  },
+export interface Score {
+  id?: number;
+  studentId: number;
+  subjectId: number;
+  marks: number;
+}
 
-  recordScore: async (data: any) => {
-    const response = await api.post("/scores", data);
-    return response.data;
-  }
+const scoreService = {
+  create: (data: Score) => api.post("/scores", data),
+  getAll: () => api.get("/scores").then(res => res.data),
+  update: (id: number, data: Score) => api.put(`/scores/${id}`, data),
+  remove: (id: number) => api.delete(`/scores/${id}`),
 };
 
 export default scoreService;
