@@ -1,15 +1,15 @@
 import api from "./api";
 
-const classStreamService = {
-  getAll: async () => {
-    const response = await api.get("/class-streams");
-    return response.data;
-  },
+export interface ClassStream {
+  id: number;
+  name: string;
+}
 
-  create: async (data: any) => {
-    const response = await api.post("/class-streams", data);
-    return response.data;
-  }
+const classStreamService = {
+  getAll: async (): Promise<ClassStream[]> => {
+    const res = await api.get("/class-streams");
+    return res.data;
+  },
 };
 
 export default classStreamService;
