@@ -1,58 +1,44 @@
-import express from "express";
-import cors from "cors";
-import { PrismaClient } from "@prisma/client";
-
-import authRoutes from "./routes/auth.routes";
-
-const app = express();
-const prisma = new PrismaClient();
-
-const PORT = process.env.PORT || 3000;
-
-// Middleware
-app.use(cors({
-  origin: [
-    "https://ikonex-frontend-ecru.vercel.app",
-    "http://localhost:5173"
-  ],
-  credentials: true
-}));
-
-app.use(express.json());
-
-// Health check
-app.get("/", (req, res) => {
-  res.json({ status: "ok", message: "Ikonex Backend Running" });
-});
-
-// Routes
-app.use("/auth", authRoutes);
-
-// Create Admin (UTILITY ROUTE)
-app.get("/create-admin", async (req, res) => {
+app.get("/reports/class/:id", async (req, res) => {
   try {
-    const bcrypt = await import("bcryptjs");
+    const classId = Number(req.params.id);
 
-    const hashedPassword = await bcrypt.hash("admin123", 10);
-
-    const user = await prisma.user.upsert({
-      where: { email: "admin@ikonex.com" },
-      update: {},
-      create: {
-        email: "admin@ikonex.com",
-        password: hashedPassword,
-        name: "Admin",
-        role: "ADMIN"
-      }
+    const students = await prisma.student.findMany({
+      where: { classStreamId: classId },
+      include: {
+        scores: true,
+      },
     });
 
-    res.json({ success: true, user });
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-});
+    const ranked = students
+      .map((s) => {
+        const total = s.scores.reduce((a, b) => a + b.marks, 0);
+        const avg = s.scores.length ? total / s.scores.length : 0;
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+        return {
+          id: s.id,
+          name: s.name,
+          total,
+          average: Number(avg.toFixed(2)),
+        };
+      })
+      .sort((a, b) => b.total - a.total)
+      .map((s, index) => ({
+        ...s,
+        position: index + 1,
+        grade:
+          s.average >= 80
+            ? "A"
+            : s.average >= 70
+            ? "B"
+            : s.average >= 60
+            ? "C"
+            : s.average >= 50
+            ? "D"
+            : "E",
+      }));
+
+    res.json(ranked);
+  } catch (err) {
+    res.status(500).json({ error: "Ranking failed" });
+  }
 });
