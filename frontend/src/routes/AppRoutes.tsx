@@ -15,8 +15,10 @@ import MainLayout from "../layout/MainLayout";
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Public */}
       <Route path="/" element={<Login />} />
 
+      {/* Protected Layout */}
       <Route
         path="/"
         element={
