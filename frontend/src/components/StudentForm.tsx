@@ -1,93 +1,87 @@
 import { useEffect, useState } from "react";
+import scoreService from "../services/scoreService";
 import studentService from "../services/studentService";
-import classStreamService from "../services/classStreamService";
+import subjectService from "../services/subjectService";
 
-export default function StudentForm({ onSuccess }: { onSuccess: () => void }) {
-  const [streams, setStreams] = useState<any[]>([]);
+export default function ScoreForm({ onSuccess }: { onSuccess: () => void }) {
+  const [students, setStudents] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<any[]>([]);
 
   const [form, setForm] = useState({
-    name: "",
-    admissionNumber: "",
-    classStreamId: ""
+    studentId: "",
+    subjectId: "",
+    marks: ""
   });
 
   useEffect(() => {
-    const loadStreams = async () => {
-      try {
-        const data = await classStreamService.getAll();
-        setStreams(data);
-      } catch (err) {
-        console.error("Failed to load class streams", err);
-      }
-    };
-
-    loadStreams();
+    studentService.getAll().then(setStudents);
+    subjectService.getAll().then(setSubjects);
   }, []);
 
   const handleChange = (e: any) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    await studentService.create({
-      ...form,
-      classStreamId: Number(form.classStreamId)
-    });
+    const payload = {
+      studentId: Number(form.studentId),
+      subjectId: Number(form.subjectId),
+      marks: Number(form.marks),
+    };
 
-    setForm({
-      name: "",
-      admissionNumber: "",
-      classStreamId: ""
-    });
+    await scoreService.create(payload);
 
+    setForm({ studentId: "", subjectId: "", marks: "" });
     onSuccess();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2 p-4 border rounded">
-      
-      {/* NAME */}
-      <input
-        name="name"
-        placeholder="Student Name"
-        value={form.name}
-        onChange={handleChange}
-        className="border p-2 w-full"
-      />
+    <form onSubmit={handleSubmit} className="p-4 border space-y-2 rounded">
 
-      {/* ADMISSION */}
-      <input
-        name="admissionNumber"
-        placeholder="Admission Number"
-        value={form.admissionNumber}
-        onChange={handleChange}
-        className="border p-2 w-full"
-      />
-
-      {/* CLASS STREAM DROPDOWN */}
+      {/* STUDENT */}
       <select
-        name="classStreamId"
-        value={form.classStreamId}
+        name="studentId"
+        value={form.studentId}
         onChange={handleChange}
         className="border p-2 w-full"
       >
-        <option value="">Select Class Stream</option>
-
-        {streams.map((stream) => (
-          <option key={stream.id} value={stream.id}>
-            {stream.name}
+        <option value="">Select Student</option>
+        {students.map((s) => (
+          <option key={s.id} value={s.id}>
+            {s.name}
           </option>
         ))}
       </select>
 
-      {/* SUBMIT */}
-      <button className="bg-blue-600 text-white px-4 py-2">
-        Add Student
+      {/* SUBJECT */}
+      <select
+        name="subjectId"
+        value={form.subjectId}
+        onChange={handleChange}
+        className="border p-2 w-full"
+      >
+        <option value="">Select Subject</option>
+        {subjects.map((s) => (
+          <option key={s.id} value={s.id}>
+            {s.name}
+          </option>
+        ))}
+      </select>
+
+      {/* MARKS */}
+      <input
+        name="marks"
+        type="number"
+        placeholder="Marks"
+        value={form.marks}
+        onChange={handleChange}
+        className="border p-2 w-full"
+      />
+
+      <button className="bg-green-600 text-white px-4 py-2">
+        Save Score
       </button>
     </form>
   );
