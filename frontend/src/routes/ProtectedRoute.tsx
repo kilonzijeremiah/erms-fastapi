@@ -7,10 +7,20 @@ interface Props {
 }
 
 const ProtectedRoute = ({ children }: Props) => {
-  const { user, loading } = useAuth();
+  const auth = useAuth();
+
+  if (!auth) {
+    return <Navigate to="/" replace />;
+  }
+
+  const { user, loading } = auth;
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
   }
 
   if (!user) {
