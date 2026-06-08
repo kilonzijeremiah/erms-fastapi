@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -19,25 +19,21 @@ const Sidebar = () => {
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          <a 
-            href="/" 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${location.pathname === '/' ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
-          >
+          <a href="/" className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${location.pathname === '/' ? 'bg-blue-700' : 'hover:bg-blue-800'}`}>
             Dashboard
           </a>
-          <a 
-            href="/students" 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${location.pathname === '/students' ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
-          >
+          <a href="/students" className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${location.pathname === '/students' ? 'bg-blue-700' : 'hover:bg-blue-800'}`}>
             Students
           </a>
         </nav>
       </div>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-auto p-8">
-          <Outlet />
+          {/* Content will be loaded based on URL */}
+          {location.pathname === '/' && <h1 className="text-3xl font-semibold">Dashboard</h1>}
+          {location.pathname === '/students' && <h1 className="text-3xl font-semibold">Students</h1>}
         </main>
       </div>
     </div>
