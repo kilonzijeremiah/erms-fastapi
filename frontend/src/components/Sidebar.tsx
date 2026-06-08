@@ -1,18 +1,8 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { Users, BookOpen, Award, BarChart3, LogOut } from 'lucide-react';
 
 const Sidebar = () => {
   const location = useLocation();
-
-  const navItems = [
-    { name: 'Dashboard', icon: BarChart3, path: '/' },
-    { name: 'Students', icon: Users, path: '/students' },
-    { name: 'Class Streams', icon: BookOpen, path: '/classes' },
-    { name: 'Subjects', icon: BookOpen, path: '/subjects' },
-    { name: 'Assessment & Scoring', icon: Award, path: '/assessments' },
-    { name: 'Reports', icon: BarChart3, path: '/reports' },
-  ];
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -28,31 +18,23 @@ const Sidebar = () => {
           </div>
         </div>
 
-        <nav className="flex-1 p-4">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <a
-                key={item.name}
-                href={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg mb-1 text-sm ${isActive ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
-              >
-                <item.icon size={20} />
-                <span>{item.name}</span>
-              </a>
-            );
-          })}
+        <nav className="flex-1 p-4 space-y-1">
+          <a 
+            href="/" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${location.pathname === '/' ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
+          >
+            Dashboard
+          </a>
+          <a 
+            href="/students" 
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${location.pathname === '/students' ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
+          >
+            Students
+          </a>
         </nav>
-
-        <div className="p-4 border-t border-blue-800">
-          <button className="flex items-center gap-3 w-full px-4 py-3 text-red-300 hover:bg-blue-800 rounded-lg">
-            <LogOut size={20} />
-            Logout
-          </button>
-        </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-auto p-8">
           <Outlet />
