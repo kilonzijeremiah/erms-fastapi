@@ -16,7 +16,12 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// ==================== AUTH ROUTES ====================
+// Health check
+app.get('/', (req: Request, res: Response) => {
+  res.json({ message: 'Ikonex API is running' });
+});
+
+// ==================== AUTH LOGIN ====================
 app.post('/auth/login', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -56,7 +61,7 @@ app.post('/auth/login', async (req: Request, res: Response) => {
     });
 
   } catch (error: any) {
-    console.error(error);
+    console.error('Login error:', error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -77,7 +82,7 @@ app.get('/create-admin', async (req: Request, res: Response) => {
       }
     });
 
-    res.json({ success: true, user });
+    res.json({ success: true, user: { id: user.id, email: user.email, name: user.name, role: user.role } });
   } catch (error: any) {
     console.error(error);
     res.status(500).json({ error: error.message });
@@ -92,13 +97,9 @@ app.get('/debug-users', async (req: Request, res: Response) => {
     });
     res.json(users);
   } catch (error: any) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
-});
-
-// Health check
-app.get('/', (req: Request, res: Response) => {
-  res.json({ status: 'ok', message: 'Ikonex Backend Running' });
 });
 
 app.listen(PORT, () => {
