@@ -1,18 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import Dashboard from './pages/Dashboard';
-import Students from './pages/Students';
 
 const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="students" element={<Students />} />
-        </Route>
-      </Routes>
+      <div className="p-8">
+        <h1 className="text-3xl font-bold">Ikonex Academy</h1>
+        <p>Backend is fixed. Frontend routing will be restored soon.</p>
+        <p>Current commit: Check your GitHub</p>
+      </div>
     </Router>
   );
 };
