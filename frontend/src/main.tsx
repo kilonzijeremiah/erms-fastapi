@@ -1,16 +1,16 @@
-import { Routes, Route } from "react-router-dom";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import "./index.css";
+import { AuthProvider } from "./context/AuthContext";
 
-import Sidebar from "./components/Sidebar";
-import Dashboard from "./pages/Dashboard";
-import Students from "./pages/Students";
-
-export default function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Sidebar />}>
-        <Route index element={<Dashboard />} />
-        <Route path="students" element={<Students />} />
-      </Route>
-    </Routes>
-  );
-}
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>
+);
