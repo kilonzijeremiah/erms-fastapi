@@ -1,6 +1,6 @@
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -8,80 +8,29 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   email     String   @unique
   password  String
   name      String
-  role      String   @default("ADMIN")   // Changed from enum to String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  teacher   Teacher?
-}
-
-model Teacher {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subjects  SubjectTeacher[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model SubjectTeacher {
-  id         Int      @id @default(autoincrement())
-  teacherId  Int
-  subjectId  Int
-  teacher    Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  subject    Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-
-  @@unique([teacherId, subjectId])
-}
-
-model ClassStream {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique
-  students    Student[]
-  subjects    Subject[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  role      String   @default("ADMIN")
 }
 
 model Student {
-  id              Int      @id @default(autoincrement())
+  id              String   @id @default(uuid())
   admissionNumber String   @unique
   name            String
-  classStreamId   Int
-  classStream     ClassStream @relation(fields: [classStreamId], references: [id])
+  classStreamId   String
   scores          Score[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-}
-
-model Subject {
-  id          Int              @id @default(autoincrement())
-  name        String
-  classStreamId Int
-  classStream ClassStream      @relation(fields: [classStreamId], references: [id])
-  scores      Score[]
-  teachers    SubjectTeacher[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
 }
 
 model Score {
-  id          Int      @id @default(autoincrement())
-  studentId   Int
-  subjectId   Int
-  ca1         Float?
-  ca2         Float?
-  exam        Float?
-  total       Float?
-  grade       String?
-  student     Student  @relation(fields: [studentId], references: [id])
-  subject     Subject  @relation(fields: [subjectId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([studentId, subjectId])
+  id        String   @id @default(uuid())
+  studentId String
+  subjectId String
+  ca1       Float?
+  ca2       Float?
+  exam      Float?
+  total     Float?
+  grade     String?
+  student   Student  @relation(fields: [studentId], references: [id])
 }
